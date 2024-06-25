@@ -49,19 +49,43 @@ function App() {
     return;
   }
 
-  const submitGuess = (guess) => {
+ const submitGuess = (currentGuess) => {
+  const normalizedGuess = currentGuess.sort().toString();
 
-    if (guess.sort().toString() == solution['EUPHEMISMS FOR DRUGS'].slice(1).sort().toString()) {
-      return true
-    } else if  (guess.sort().toString() == solution['WORDS THAT POSSES THEIR OWN PROPERTY'].slice(1).sort().toString()) {
-      return true
-    } else if  (guess.sort().toString() == solution['SNAKES'].slice(1).sort().toString()) {
-      return true
-    } else if  (guess.sort().toString() == solution['CARBONATED BEVERAGES'].slice(1).sort().toString()) {
-      return true
+  // Check each category in the solution to see if the guess matches
+  let categorySolved = null;
+  for (const category in solution) {
+    if (normalizedGuess === solution[category].sort().toString()) {
+      categorySolved = category;
+      break;
     }
-    return;
   }
+
+  if (categorySolved) {
+    // Update the state to reflect the solved category
+    setCategoriesSolved(categoriesSolved + 1);
+    setGuess([]); // Clear current guess after successful attempt
+
+    // Check if all categories are solved
+    if (categoriesSolved + 1 === Object.keys(solution).length) {
+      setIsWon(true); // Set the game as won
+    }
+
+    return true; // Guess was correct
+  } else {
+    // Reduce the number of attempts left
+    setAttempts(attempts - 1);
+
+    // Check if the game is over
+    if (attempts - 1 === 0) {
+      setIsWon(false); // Optionally handle game over scenario
+    }
+
+    setGuess([]); // Optionally clear guess after unsuccessful attempt
+    return false; // Guess was incorrect
+  }
+}
+
 
   const shuffleBoard = (board, n) => {
     // Ensure the starting index 'n' is within the matrix bounds
@@ -95,10 +119,11 @@ function App() {
     return board
   }
 
+  
 
-
-  const clearGuesses = (board) => {
-
+  const clearGuesses = () => {
+    setGuess([]);
+    return;
   }
 
 
